@@ -1,22 +1,35 @@
 import express from 'express';
 import constants from './lib/constant';
+import webhookRoutes from "./routes/webhook";
+import paymentRoutes from "./routes/payment";
+import { errorHandler } from './auth/errorHandler';
+import path from 'path';
 
 const app = express();
 const PORT = constants.ENV_CONFIG.SERVER_PORT;
 
+// Webhooks need raw body
+app.use("/webhook", express.raw({ type: "*/*" }));
+app.use("/payment/webhook", express.raw({ type: "*/*" }));
+
+// Serve public folder
+// app.use(express.static(path.join(__dirname, "../public")));
+app.use(express.static(path.resolve("./public")));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+// Error handler
+app.use(errorHandler);
 
-app.post('/webhook', (req, res) => {
-    console.log("---- Webhook Received ----");
-    console.log("Headers:", req.headers);
-    console.log("Body:", req.body);
-    console.log("--------------------------");
+// Routes
+app.use('/webhook', webhookRoutes);
+app.use("/payment", paymentRoutes);
 
-    // ALWAYS respond quickly
-    res.status(200).send("Webhook received");
-
+// Default route
+app.get("/", (req, res) => {
+    res.sendFile(path.resolve("src/public/index.html"));
 });
+
 app.listen(PORT, () => {
     console.log(`Server is listening on PORT :-  ${PORT}`);
 });
