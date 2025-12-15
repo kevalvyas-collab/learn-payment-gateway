@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>PayU Test Payment</title>
+</head>
+
+<body>
+
+    <h2>PayU Payment</h2>
+
+    <form id="paymentForm">
+        <input type="text" name="amount" placeholder="Amount" required><br><br>
+        <input type="text" name="productinfo" placeholder="Product" required><br><br>
+        <input type="text" name="firstname" placeholder="First Name" required><br><br>
+        <input type="email" name="email" placeholder="Email" required><br><br>
+        <input type="text" name="phone" placeholder="Phone" required><br><br>
+
+        <button type="submit">Pay Now</button>
+    </form>
+
+    <script>
+        document.getElementById("paymentForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const form = new FormData(this);
+            const body = {};
+
+            for (let [key, value] of form.entries()) {
+                body[key] = value;
+            }
+
+            // --- send to Node backend ---
+            const res = await fetch("/payment/create", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+
+            const data = await res.json();
+
+            // Create auto-submit form for PayU
+            const payuForm = document.createElement("form");
+            payuForm.action = "https://test.payu.in/_payment";
+            payuForm.method = "POST";
+
+            Object.keys(data).forEach(key => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = key;
+                input.value = data[key];
+                payuForm.appendChild(input);
+            });
+
+            document.body.appendChild(payuForm);
+            payuForm.submit();
+        });
+    </script>
+
+</body>
+
+</html>
