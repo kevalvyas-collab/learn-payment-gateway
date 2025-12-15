@@ -5,7 +5,6 @@ const PAY_U_KEY = constants.PAY_U_CONFIG.PAY_U_KEY;
 const PAY_U_SALT = constants.PAY_U_CONFIG.PAY_U_SALT;
 
 export const generatePayUHash = (data: any) => {
-    console.log('---- data ---->', data);
     const hashString =
         PAY_U_KEY + "|" +
         data.txnid + "|" +
@@ -26,20 +25,24 @@ export const generatePayUHash = (data: any) => {
 
 
 export const verifyPayUHash = (data: any) => {
-    let hashData = {
-        txnid: data.txnid,
-        amount: data.amount,
-        productinfo: data.productinfo,
-        firstname: data.firstname,
-        email: data.email,
-        udf1: data.udf1,
-        udf2: data.udf2,
-        udf3: data.udf3,
-        udf4: data.udf4, udf5: data.udf5
-    };
-    const expectedHash = generatePayUHash(hashData);
+    const status = data.status || "";
+    const txnid = data.txnid || "";
+    const amount = data.amount || "";
+    const productinfo = data.productinfo || "";
+    const firstname = data.firstname || "";
+    const email = data.email || "";
 
-    console.log('expected hash', expectedHash);
-    console.log('available hash', data.hash);
-    return expectedHash === data.hash;
+    const hashString =
+        PAY_U_SALT + "|" +
+        status + "|||||||||||" +
+        email + "|" +
+        firstname + "|" +
+        productinfo + "|" +
+        amount + "|" +
+        txnid + "|" +
+        PAY_U_KEY;
+
+    const calculated = crypto.createHash("sha512").update(hashString).digest("hex");
+
+    return calculated === data.hash;
 };

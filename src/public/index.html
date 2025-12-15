@@ -1,12 +1,156 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html>
 
 <head>
     <title>PayU Test Payment</title>
+=======
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Interactive PayU Payment</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Button to open the payment form */
+        .open-btn {
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            background: #ff6b6b;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        .open-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Modal background */
+        .modal-bg {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Modal content */
+        .modal {
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            width: 380px;
+            position: relative;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 22px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #333;
+        }
+
+        /* Floating labels */
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 12px 12px 0;
+            font-size: 14px;
+            border: none;
+            border-bottom: 2px solid #ccc;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-bottom-color: #ff6b6b;
+        }
+
+        label {
+            position: absolute;
+            left: 0;
+            top: 12px;
+            color: #999;
+            font-size: 14px;
+            pointer-events: none;
+            transition: all 0.3s;
+        }
+
+        input:focus+label,
+        input:not(:placeholder-shown)+label {
+            top: -10px;
+            font-size: 12px;
+            color: #ff6b6b;
+        }
+
+        button.submit-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 50px;
+            border: none;
+            font-size: 16px;
+            background: #2575fc;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button.submit-btn:hover {
+            background: #0051a2;
+        }
+    </style>
+>>>>>>> e6b4321 (update folder structure)
 </head>
 
 <body>
 
+<<<<<<< HEAD
     <h2>PayU Payment</h2>
 
     <form id="paymentForm">
@@ -54,6 +198,83 @@
 
             document.body.appendChild(payuForm);
             payuForm.submit();
+=======
+    <button class="open-btn">Pay Now</button>
+
+    <div class="modal-bg" id="modal-bg">
+        <div class="modal">
+            <button class="close-btn" id="close-btn">&times;</button>
+            <h2>PayU Payment</h2>
+            <form id="paymentForm">
+                <div class="form-group">
+                    <input type="text" name="amount" placeholder=" " required>
+                    <label>Amount</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="productinfo" placeholder=" " required>
+                    <label>Product Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="firstname" placeholder=" " required>
+                    <label>First Name</label>
+                </div>
+                <div class="form-group">
+                    <input type="email" name="email" placeholder=" " required>
+                    <label>Email</label>
+                </div>
+                <div class="form-group">
+                    <input type="text" name="phone" placeholder=" " required>
+                    <label>Phone</label>
+                </div>
+                <button type="submit" class="submit-btn">Submit Payment</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const openBtn = document.querySelector(".open-btn");
+        const modalBg = document.getElementById("modal-bg");
+        const closeBtn = document.getElementById("close-btn");
+
+        openBtn.addEventListener("click", () => modalBg.style.display = "flex");
+        closeBtn.addEventListener("click", () => modalBg.style.display = "none");
+        window.addEventListener("click", (e) => {
+            if (e.target === modalBg) modalBg.style.display = "none";
+        });
+
+        const paymentForm = document.getElementById("paymentForm");
+        paymentForm.addEventListener("submit", async function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const body = {};
+            formData.forEach((value, key) => body[key] = value);
+
+            try {
+                const res = await fetch("http://localhost:3001/payment/create", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(body)
+                });
+                const data = await res.json();
+
+                // Auto-submit form to PayU
+                const payuForm = document.createElement("form");
+                payuForm.action = "https://test.payu.in/_payment";
+                payuForm.method = "POST";
+                Object.keys(data).forEach(key => {
+                    const input = document.createElement("input");
+                    input.type = "hidden";
+                    input.name = key;
+                    input.value = data[key];
+                    payuForm.appendChild(input);
+                });
+                document.body.appendChild(payuForm);
+                payuForm.submit();
+            } catch (err) {
+                console.error(err);
+                alert("Payment error. Please try again.");
+            }
+>>>>>>> e6b4321 (update folder structure)
         });
     </script>
 

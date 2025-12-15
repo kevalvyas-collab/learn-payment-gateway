@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { createPayment, successWebhookRequest, failureWebhookRequest } from "../controllers/paymentController";
+import paymentController from "../controllers/paymentController";
+import webHookController from "../controllers/webhookController";
 
 const router = Router();
 
-router.post("/create", createPayment);
-router.post("/success", successWebhookRequest);
-router.post("/failure", failureWebhookRequest);
+router.post("/create", paymentController.createPayment);
+router.post("/success", webHookController.successWebHookRequest);
+router.post("/failure", webHookController.failureWebhookRequest);
 
 export default router;
 

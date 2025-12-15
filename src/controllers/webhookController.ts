@@ -1,10 +1,28 @@
 import { Request, Response } from 'express';
+import { verifyPayUHash } from '../utils/paymentHelper';
 
 class WebHookController {
-    handleWebHook = (req: Request, res: Response) => {
-        console.log("---- Secure Webhook Received ----");
-        console.log("Body:", req.body.toString());
-        res.status(200).send("Webhook handled successfully");
+
+    successWebHookRequest = (req: Request, res: Response) => {
+
+        if (!verifyPayUHash(req.body)) return res.status(400).send("Invalid signature");
+        res.json({
+            status: "success",
+            message: "Payment successful",
+            data: {
+                txnId: req.body.txnid,
+                status: req.body.status,
+                hash: req.body.hash
+            }
+        });
+    };
+
+    failureWebhookRequest = (req: Request, res: Response) => {
+        res.json({
+            status: "failed",
+            message: "Payment failed",
+            data: req.body
+        });
     };
 }
 
