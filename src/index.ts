@@ -10,7 +10,7 @@ const PORT = constants.ENV_CONFIG.SERVER_PORT;
 
 /** Solve CORS Origin ERROR  */
 app.use(cors({
-    origin: ' http://localhost:3000'
+    origin: 'http://localhost:3000'
 }));
 // Webhooks need raw body
 app.use("/payment/webhook", express.raw({ type: "*/*" }));
